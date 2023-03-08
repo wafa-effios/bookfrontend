@@ -1,15 +1,32 @@
 <template>
+
   <v-app>
-<!--    <v-app-bar-->
-<!--      app-->
-<!--      color="primary"-->
-<!--      dark-->
-<!--    >   </v-app-bar>-->
+    <v-app-bar app>
+      <v-toolbar-title>
+        <router-link to="/">My App</router-link>
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-menu offset-y>
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" text>
+            <v-icon>mdi-dots-vertical</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item>
+            <router-link to="/" class="v-list-item__content">Home</router-link>
+          </v-list-item>
+          <v-list-item>
+            <router-link to="/addbook" class="v-list-item__content">Add book</router-link>
+          </v-list-item>
+          <v-list-item>
+            <router-link to="/msg" class="v-list-item__content">message</router-link>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </v-app-bar>
 
 
-    <router-link to="/">Home</router-link>
-    <router-link to="/addbook">add book </router-link>
-    <router-link to="/msg">message  </router-link>
 
 
     <v-main>

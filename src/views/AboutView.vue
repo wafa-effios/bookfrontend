@@ -14,7 +14,7 @@
 
     <v-select
         v-model="author"
-        :items="options"
+        :items="$store.state.authors"
         item-text="name"
         item-value="id"
    />
@@ -54,35 +54,27 @@ export  default {
       }
     },
     async EditBook() {
-      const authSelected = this.options.find(value => value.id === this.author);
+      const authSelected = this.$store.state.authors.find(value => value.id === this.author);
       const data = {
         id: this.id ,
         title: this.title,
         author: authSelected,
       };
-      try {
-        console.log(data)
-        const response = await axios.put('http://127.0.0.1:5000/books', data);
-        console.log(response.data);
-        this.goHome();
-      } catch (error) {
-        console.error(error);
-      }
+      await this.$store.dispatch('editbook', data);
+      this.goHome()
     },
 
     async addBook() {
-       const authSelected = this.options.find(value => value.id === this.author);
+       const authSelected = this.$store.state.authors.find(value => value.id === this.author);
       const data = {
         title: this.title,
         author: authSelected,
       };
-      try {
-        console.log(data)
-        const response = await axios.post('http://127.0.0.1:5000/books', data);
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
+      await this.$store.dispatch('addbook', data);
+      if(this.$store.state.response != undefined){
+        alert('add with sucess')
       }
+
     },
   },
   mounted() {
@@ -98,12 +90,8 @@ export  default {
         console.error(error)
       })
     }
-    axios.get('http://127.0.0.1:5000/authors')
-        .then(response => {
-          this.options = response.data
-        }).catch(error => {
-      console.error(error)
-    })
+    this.$store.dispatch('getAllAuthors');
+
   }
 
 }

@@ -1,8 +1,8 @@
 <template>
   <v-data-table
       :headers="headers"
-      :items="desserts"
-      sort-by="calories"
+      :items="books"
+      sort-by="id"
       class="elevation-1"
   >
     <template v-slot:top>
@@ -17,7 +17,7 @@
         ></v-divider>
         <v-spacer></v-spacer>
 
-        <v-dialog v-model="dialogDelete" max-width="500px">
+        <v-dialog v-model="dialogDelete" max-width="600px">
           <v-card>
             <v-card-title class="text-h5">Are you sure you want to delete this Book?</v-card-title>
             <v-card-actions>
@@ -45,24 +45,17 @@
         mdi-delete
       </v-icon>
     </template>
-    <template v-slot:no-data>
-      <v-btn
-          color="primary"
-          @click="initialize"
-      >
-        Reset
-      </v-btn>
-    </template>
+
   </v-data-table>
 </template>
-<script>
-import axios from "axios";
+<script >
 
 export default {
   data: () => ({
     id:null,
     dialog: false,
     dialogDelete: false,
+    books: [],
     headers: [
       {
         text: 'id',
@@ -75,7 +68,6 @@ export default {
       { text: 'Author name', value: 'author.name' },
       { text: 'Actions', value: 'actions', sortable: false },
     ],
-    desserts: [],
 
   }),
 
@@ -89,15 +81,21 @@ export default {
       val || this.closeDelete()
     },
   },
+created() {
+  this.$store.dispatch("getBooks").then(() => {
+    this.books= this.$store.getters.getBook ;
 
-  created () {
-    this.initialize()
-  },
+  })
 
+},
+//
+// computed :{
+//   books(){
+//     return this.$store.state.books
+//   }
+// },
   methods: {
-    initialize () {
-      this.desserts = []
-    },
+
 
     editItem (item) {
      this.$router.push('/editbook/'+item);
@@ -105,17 +103,17 @@ export default {
 
     deleteItem (item) {
       this.id = item ;
+
       // this.editedIndex = this.desserts.indexOf(item)
       // this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },
 
     deleteItemConfirm () {
-      axios.delete("http://127.0.0.1:5000/books/"+this.id).then(value => {
-        this.getData();
-        this.id = null ;
-        this.closeDelete();
-      console.log(value)}).catch(reason => console.log(reason))
+      this.$store.dispatch('deleteBook',this.id);
+      this.id = null ;
+      this.books = this.$store.getters.getBook ;
+      this.closeDelete();
       // this.desserts.splice(this.editedIndex, 1)
 
     },
@@ -131,20 +129,15 @@ export default {
       this.$nextTick(() => {
       })
     },
-    async getData() {
-      axios.get('http://127.0.0.1:5000/books')
-          .then(response => {
-            console.log(response.data)
-            this.desserts = response.data
-          }).catch(error => {
-        console.error(error)
-      })
-
-    },
   },
-  mounted() {
- this.getData();
-      }
+  // mounted() {
+  //   console.log("mounted");
+  //
+  //   this.$store.dispatch("getBooks").then(() =>{
+  //     this.books =  this.$store.getters.getBook
+  //     console.log("mounted"+this.books)
+  //   } )
+  // }
 
 }
 </script>
